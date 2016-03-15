@@ -35,6 +35,13 @@
 			shape3.closePath();
 
 			var shape4 = new Path2D();
+			shape4.moveTo(x+width, y);
+			shape4.lineTo(x+width, y+height);
+			shape4.lineTo(x, y+height);
+			shape4.closePath();
+
+			context.shadowBlur = 5;
+			context.shadowColor = "#333";
 
 			context.fillStyle = "#00695c";
 			context.fill(shape1);
@@ -42,8 +49,11 @@
 			context.fillStyle = "#ff5722";
 			context.fill(shape2);
 
-			context.fillStyle = "#00695c";
+			context.fillStyle = "#00796B";
 			context.fill(shape3);
+
+			context.fillStyle = "#009688";
+			context.fill(shape4);
 		}
 
 		drawIllustration();
