@@ -17,6 +17,7 @@
 	var canvas = document.getElementById("myCanvas");
 	//define context to draw on
 	var ctx = canvas.getContext("2d");
+	
 	//set starting position for ball relative to canvas
 	var x = canvas.width/2;
 	var y = canvas.height-30;
@@ -24,9 +25,20 @@
 	ballColor = "#0095DD";
 	//set ball radius for easier collision detection
 	var ballRadius = 10;
+	
+	//setup paddle dimensions
+	var paddleHeight = 10;
+	var paddleWidth = 75;
+	var paddleX = (canvas.width-paddleWidth)/2;
+	var paddleColor = "#0095DD";
+
 	//set intervals to change positions each frame
 	var dx = 2;
 	var dy = -2;
+
+	//setup variables for keyboard input
+	var rightPressed = false;
+	var leftPressed = false;
 
 	//setup function to randomly generate a hex color
 	function getRandomColor() {
@@ -38,11 +50,20 @@
 		return color;
 	}
 
-	//draw the ball
+	//setup ball
 	function drawBall() {
 		ctx.beginPath();
 		ctx.arc(x, y, ballRadius, 0, Math.PI*2);
 		ctx.fillStyle = ballColor;
+		ctx.fill();
+		ctx.closePath();
+	}
+
+	//setup paddle
+	function drawPaddle() {
+		ctx.beginPath();
+		ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+		ctx.fillStyle = paddleColor;
 		ctx.fill();
 		ctx.closePath();
 	}
@@ -53,8 +74,10 @@
 		ctx.clearRect(0,0,canvas.width, canvas.height);
 		//draw ball
 		drawBall();
+		//draw paddle
+		drawPaddle();
 
-		//check for collision with wall and reverse direction if so
+		//check ball for collision with wall and reverse direction if so
 		if((y+dy < ballRadius) || (y+dy > canvas.height - ballRadius)) {
 			dy = -dy;
 			ballColor = getRandomColor();
@@ -64,9 +87,40 @@
 			ballColor = getRandomColor();
 		}
 
+		//move paddle
+		if(rightPressed) {
+			paddleX += 5;
+		}
+		else if(leftPressed) {
+			paddleX -= 5;
+		}
+
 		//increment position
 		x += dx;
 		y += dy;
+	}
+
+	//add event listeners for key presses
+	document.addEventListener("keydown", keyDownHandler, false);
+	document.addEventListener("keyup", keyUpHandler, false);
+
+	//add create key handler functions
+	function keyDownHandler(e) {
+		if(e.keyCode == 39) {
+			rightPressed = true;
+		}
+		if(e.keyCode == 37) {
+			leftPressed = true;
+		}
+	}
+
+	function keyUpHandler(e) {
+		if(e.keyCode == 39) {
+			rightPressed = false;
+		}
+		if(e.keyCode == 37) {
+			leftPressed = false;
+		}
 	}
 
 	//run draw function with time interval in ms
