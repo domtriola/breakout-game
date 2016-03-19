@@ -13,27 +13,63 @@
 <canvas id="myCanvas" width="480" height="320"></canvas>
 
 <script>
+	//get canvas variable
 	var canvas = document.getElementById("myCanvas");
+	//define context to draw on
 	var ctx = canvas.getContext("2d");
+	//set starting position for ball relative to canvas
 	var x = canvas.width/2;
 	var y = canvas.height-30;
+	//set starting color for ball
+	ballColor = "#0095DD";
+	//set ball radius for easier collision detection
+	var ballRadius = 10;
+	//set intervals to change positions each frame
 	var dx = 2;
 	var dy = -2;
 
+	//setup function to randomly generate a hex color
+	function getRandomColor() {
+		var letters = '0123456789ABCDEF'.split('');
+		var color = '#';
+		for (var i = 0; i < 6; i++) {
+			color += letters[Math.floor(Math.random()*16)];
+		}
+		return color;
+	}
+
+	//draw the ball
 	function drawBall() {
 		ctx.beginPath();
-		ctx.arc(x, y, 10, 0, Math.PI*2);
-		ctx.fillStyle = "#0095DD";
+		ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+		ctx.fillStyle = ballColor;
 		ctx.fill();
 		ctx.closePath();
 	}
 
+	//setup draw function for animations
 	function draw() {
+		//clear canvas before every frame
 		ctx.clearRect(0,0,canvas.width, canvas.height);
+		//draw ball
 		drawBall();
+
+		//check for collision with wall and reverse direction if so
+		if((y+dy < ballRadius) || (y+dy > canvas.height - ballRadius)) {
+			dy = -dy;
+			ballColor = getRandomColor();
+		}
+		if((x+dx < ballRadius) || (x+dx > canvas.width - ballRadius)) {
+			dx = -dx;
+			ballColor = getRandomColor();
+		}
+
+		//increment position
 		x += dx;
 		y += dy;
 	}
+
+	//run draw function with time interval in ms
 	setInterval(draw, 10);
 </script>
 
