@@ -16,8 +16,9 @@
 
 /* Things to fix later
 
-	- ball can enter into side of paddle and bounce around inside
-	- bricks appear to have collision detection inside rather than at edges
+	- Ball can enter into side of paddle and bounce around inside
+	- Bricks appear to have collision detection inside rather than at edges
+	- Alert message appears endlessly for lose condition, and it appears at paddle height
 
 */
 
@@ -57,6 +58,9 @@
 	//setup variables for keyboard input
 	var rightPressed = false;
 	var leftPressed = false;
+
+	//initialize score
+	var score = 0;
 
 	//setup brick variables
 	var brickRowCount = 3;
@@ -172,13 +176,23 @@
 				var b = bricks[c][r];
 				if(b.status == 1) {
 					if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
-						ballColor = getRGB();
 						dy = -dy;
 						b.status = 0;
+						ballColor = getRGB();
+						score+=1;
+						if(score==brickRowCount*brickColumnCount) {
+							alert("You Win! Reload to play again");
+						}
 					}
 				}
 			}
 		}
+	}
+
+	function drawScore() {
+		ctx.font = "16px Arial";
+		ctx.fillStyle = "#0095DD";
+		ctx.fillText("Score: "+score, 8, 20);
 	}
 
 	//setup draw function for animations
@@ -193,6 +207,8 @@
 		drawPaddle();
 		//collision detection
 		collisionDetection();
+		//draw score
+		drawScore();
 
 		//check ball for collision with wall and reverse direction if so
 		if((x+dx < ballRadius) || (x+dx > canvas.width - ballRadius)) {
@@ -203,11 +219,9 @@
 		} else if(y+dy > canvas.height-paddleHeight-ballRadius) {
 			if (x > paddleX && x < paddleX + paddleWidth) {
 				dy = -dy;
+			} else {
+				//alert("Game Over. Reload to try again");
 			}
-		} else if(y+dy > canvas.height - ballRadius) {
-			/*Avoid endless alerts for now*/
-			//alert("Game Over");
-			//document.location.reload();
 		}
 
 		//move paddle
