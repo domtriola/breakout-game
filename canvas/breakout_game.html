@@ -13,6 +13,22 @@
 <canvas id="myCanvas" width="480" height="320"></canvas>
 
 <script>
+
+/* Things to fix later
+
+	- ball can enter into side of paddle and bounce around inside
+	- bricks appear to have collision detection inside rather than at edges
+
+*/
+
+/* Things it would be nice to do
+
+	- Increase durability of bricks
+	- Have bricks change color to indicate amount of time hit
+	- Have ball copy color of last brick it hit
+
+*/
+
 	//get canvas variable
 	var canvas = document.getElementById("myCanvas");
 	//define context to draw on
@@ -59,7 +75,7 @@
 		bricks[c] = [];
 		for(r=0; r<brickRowCount; r++) {
 			//add bricks to the row for each column
-			bricks[c][r] = { x: 0, y: 0 };
+			bricks[c][r] = { x: 0, y: 0, status: 1 };
 		}
 	}
 
@@ -67,18 +83,20 @@
 	function drawBricks() {
 		for(c=0; c<brickColumnCount; c++) {
 			for(r=0; r<brickRowCount; r++) {
-				//setup brick position values based on column and row index
-				var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
-				var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
-
-				/*Don't need this yet*/
-				//bricks[c][r].x = brickX;
-				//bricks[c][r].y = brickY;
-				ctx.beginPath();
-				ctx.rect(brickX, brickY, brickWidth, brickHeight);
-				ctx.fillStyle = brickColor;
-				ctx.fill();
-				ctx.closePath();
+				if(bricks[c][r].status == 1) {
+					//setup brick position values based on column and row index
+					var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+					var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+					//set x and y positions for collision detection
+					bricks[c][r].x = brickX;
+					bricks[c][r].y = brickY;
+					//draw brick
+					ctx.beginPath();
+					ctx.rect(brickX, brickY, brickWidth, brickHeight);
+					ctx.fillStyle = brickColor;
+					ctx.fill();
+					ctx.closePath();
+				}
 			}
 		}
 	}
@@ -124,48 +142,6 @@
 		ctx.closePath();
 	}
 
-	//setup draw function for animations
-	function draw() {
-		//clear canvas before every frame
-		ctx.clearRect(0,0,canvas.width, canvas.height);
-		//draw bricks
-		drawBricks();
-		//draw ball
-		drawBall();
-		//draw paddle
-		drawPaddle();
-
-		//check ball for collision with wall and reverse direction if so
-		if((x+dx < ballRadius) || (x+dx > canvas.width - ballRadius)) {
-			dx = -dx;
-			ballColor = getRGB();
-		}
-		if(y+dy < ballRadius) {
-			dy = -dy;
-			ballColor = getRGB();
-		} else if(y+dy > canvas.height-paddleHeight-ballRadius) {
-			if (x > paddleX && x < paddleX + paddleWidth) {
-				dy = -dy;
-			}
-		} else if(y+dy > canvas.height - ballRadius) {
-			/*Avoid endless alerts for now*/
-			//alert("Game Over");
-			//document.location.reload();
-		}
-
-		//move paddle
-		if(rightPressed && paddleX < (canvas.width-paddleWidth)) {
-			paddleX += 5;
-		}
-		else if(leftPressed && paddleX > 0) {
-			paddleX -= 5;
-		}
-
-		//increment position
-		x += dx;
-		y += dy;
-	}
-
 	//add event listeners for key presses
 	document.addEventListener("keydown", keyDownHandler, false);
 	document.addEventListener("keyup", keyUpHandler, false);
@@ -187,6 +163,64 @@
 		if(e.keyCode == 37) {
 			leftPressed = false;
 		}
+	}
+
+	function collisionDetection() {
+		for(c=0; c<brickColumnCount; c++) {
+			for(r=0; r<brickRowCount; r++) {
+				//use b variable for easier readability
+				var b = bricks[c][r];
+				if(b.status == 1) {
+					if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+						ballColor = getRGB();
+						dy = -dy;
+						b.status = 0;
+					}
+				}
+			}
+		}
+	}
+
+	//setup draw function for animations
+	function draw() {
+		//clear canvas before every frame
+		ctx.clearRect(0,0,canvas.width, canvas.height);
+		//draw bricks
+		drawBricks();
+		//draw ball
+		drawBall();
+		//draw paddle
+		drawPaddle();
+		//collision detection
+		collisionDetection();
+
+		//check ball for collision with wall and reverse direction if so
+		if((x+dx < ballRadius) || (x+dx > canvas.width - ballRadius)) {
+			dx = -dx;
+		}
+		if(y+dy < ballRadius) {
+			dy = -dy;
+		} else if(y+dy > canvas.height-paddleHeight-ballRadius) {
+			if (x > paddleX && x < paddleX + paddleWidth) {
+				dy = -dy;
+			}
+		} else if(y+dy > canvas.height - ballRadius) {
+			/*Avoid endless alerts for now*/
+			//alert("Game Over");
+			//document.location.reload();
+		}
+
+		//move paddle
+		if(rightPressed && paddleX < (canvas.width-paddleWidth)) {
+			paddleX += 5;
+		}
+		else if(leftPressed && paddleX > 0) {
+			paddleX -= 5;
+		}
+
+		//increment position
+		x += dx;
+		y += dy;
 	}
 
 	//run draw function with time interval in ms
