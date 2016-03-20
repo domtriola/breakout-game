@@ -32,7 +32,7 @@
 	var paddleHeight = 10;
 	var paddleWidth = 75;
 	var paddleX = (canvas.width-paddleWidth)/2;
-	var paddleColor = "#0095DD";
+	var paddleColor = "#000";
 
 	//set intervals to change positions each frame
 	var dx = 2;
@@ -41,6 +41,47 @@
 	//setup variables for keyboard input
 	var rightPressed = false;
 	var leftPressed = false;
+
+	//setup brick variables
+	var brickRowCount = 3;
+	var brickColumnCount = 5;
+	var brickWidth = 75;
+	var brickHeight = 20;
+	var brickPadding = 10;
+	var brickOffsetTop = 30;
+	var brickOffsetLeft = 30;
+	var brickColor = "#000"
+
+	//hold bricks in two dimensional array
+	var bricks = [];
+	for(c=0; c<brickColumnCount; c++) {
+		//create column arrays
+		bricks[c] = [];
+		for(r=0; r<brickRowCount; r++) {
+			//add bricks to the row for each column
+			bricks[c][r] = { x: 0, y: 0 };
+		}
+	}
+
+	//function to draw bricks
+	function drawBricks() {
+		for(c=0; c<brickColumnCount; c++) {
+			for(r=0; r<brickRowCount; r++) {
+				//setup brick position values based on column and row index
+				var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+				var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+
+				/*Don't need this yet*/
+				//bricks[c][r].x = brickX;
+				//bricks[c][r].y = brickY;
+				ctx.beginPath();
+				ctx.rect(brickX, brickY, brickWidth, brickHeight);
+				ctx.fillStyle = brickColor;
+				ctx.fill();
+				ctx.closePath();
+			}
+		}
+	}
 
 	/* random color generator
 	//setup function to randomly generate a hex color
@@ -87,6 +128,8 @@
 	function draw() {
 		//clear canvas before every frame
 		ctx.clearRect(0,0,canvas.width, canvas.height);
+		//draw bricks
+		drawBricks();
 		//draw ball
 		drawBall();
 		//draw paddle
