@@ -22,7 +22,9 @@
 	var x = canvas.width/2;
 	var y = canvas.height-30;
 	//set starting color for ball
-	ballColor = "#0095DD";
+	ballColor = "#0000ff";
+	//set starting colorIdx for getRGB()
+	colorIdx = 2
 	//set ball radius for easier collision detection
 	var ballRadius = 10;
 	
@@ -40,6 +42,7 @@
 	var rightPressed = false;
 	var leftPressed = false;
 
+	/* random color generator
 	//setup function to randomly generate a hex color
 	function getRandomColor() {
 		var letters = '0123456789ABCDEF'.split('');
@@ -48,6 +51,18 @@
 			color += letters[Math.floor(Math.random()*16)];
 		}
 		return color;
+	}
+	*/
+
+	//function to cycle through rgb colors
+	function getRGB() {
+		var colors = ["#ff0000", "#00ff00", "#0000ff"];
+		if (colorIdx < colors.length - 1) {
+			colorIdx+=1;
+		} else {
+			colorIdx = 0;
+		}
+		return colors[colorIdx];
 	}
 
 	//setup ball
@@ -78,20 +93,28 @@
 		drawPaddle();
 
 		//check ball for collision with wall and reverse direction if so
-		if((y+dy < ballRadius) || (y+dy > canvas.height - ballRadius)) {
-			dy = -dy;
-			ballColor = getRandomColor();
-		}
 		if((x+dx < ballRadius) || (x+dx > canvas.width - ballRadius)) {
 			dx = -dx;
-			ballColor = getRandomColor();
+			ballColor = getRGB();
+		}
+		if(y+dy < ballRadius) {
+			dy = -dy;
+			ballColor = getRGB();
+		} else if(y+dy > canvas.height-paddleHeight-ballRadius) {
+			if (x > paddleX && x < paddleX + paddleWidth) {
+				dy = -dy;
+			}
+		} else if(y+dy > canvas.height - ballRadius) {
+			/*Avoid endless alerts for now*/
+			//alert("Game Over");
+			//document.location.reload();
 		}
 
 		//move paddle
-		if(rightPressed) {
+		if(rightPressed && paddleX < (canvas.width-paddleWidth)) {
 			paddleX += 5;
 		}
-		else if(leftPressed) {
+		else if(leftPressed && paddleX > 0) {
 			paddleX -= 5;
 		}
 
