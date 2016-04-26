@@ -25,6 +25,8 @@ var canvas = document.getElementById("myCanvas");
 //define context to draw on
 var ctx = canvas.getContext("2d");
 
+play = true;
+
 //Set auto-play for testing purposes
 autoPlay = true;
 function toggleAutoPlay() {
@@ -191,8 +193,13 @@ function brickHit(b) {
 	ballColor = getRGB();
 	score+=1;
 	if(score==brickRowCount*brickColumnCount*brickLives) {
-		document.location.reload();
-		alert("You Win! Press ok to play again");
+		//document.location.reload();
+		//alert("You Win! Press ok to play again");
+		var again = confirm("You Win! Play again?");
+		if(again)
+			document.location.reload();
+		else
+			play = false;
 	}
 }
 
@@ -255,8 +262,11 @@ function draw() {
 			//alert("Game Over. Reload to try again");
 			lives--;
 			if(!lives) {
-				document.location.reload();
-				alert("Game Over. Play again?");
+				play = confirm("You Win! Play again?");
+				if(play)
+					document.location.reload();
+				else
+					play = false;
 			} else {
 				//reset starting positions
 				x = canvas.width/2;
@@ -286,7 +296,8 @@ function draw() {
 	y += dy;
 
 	//have draw call itself
-	requestAnimationFrame(draw);
+	if(play)
+		requestAnimationFrame(draw);
 }
 
 //run draw function with time interval in ms
