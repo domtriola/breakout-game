@@ -1,25 +1,3 @@
-/*	
-	This is my modified version of the breakout game that can be made by following
-	the tutorial at: https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript
-*/
-
-/* Things I have improved
-
-	- Ball now collides with the edges of the bricks and paddle rather than the center
-	- Ball color changes betwen rgb upon brick collision
-	- Bricks now take more than one hit to destroy
-	- Bricks change color to indicate how many times they have been hit
-	- Ball can now change dx when it hits the side of the brick
-
-*/
-
-/* Things it would be nice to do
-
-	- Have ball copy color of last brick it hit
-	- Add ability for paddle to alter the course of the ball
-
-*/
-
 //get canvas variable
 var canvas = document.getElementById("myCanvas");
 //define context to draw on
